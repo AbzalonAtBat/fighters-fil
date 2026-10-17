@@ -228,20 +228,28 @@ def _load_cache():
         return {}
 
 
-def translate(text, cache):
-    """Traduit JA->TR_TARGET via MyMemory (gratuit, sans cle).
+def translate(text, cache, src="ja"):
+    """Traduit vers TR_TARGET via MyMemory (gratuit, sans cle).
+
+    src="ja" pour les sources japonaises, src="en" pour les anglophones : tout
+    le fil est rendu en TR_TARGET.
 
     Le cache sur disque est indispensable : le quota gratuit est limite, et sans
     lui chaque execution retraduirait les memes titres. Les entrees deja vues ne
     coutent donc rien.
     """
-    if not text or not JP_RE.search(text):
+    if not text:
         return text
+    has_jp = bool(JP_RE.search(text))
+    if src == "ja" and not has_jp:
+        return text            # rien de japonais a traduire
+    if src == "en" and has_jp:
+        return text            # securite : jamais du japonais via une paire en|fr
     key = "%s|%s" % (TR_TARGET, text)
     if key in cache:
         return cache[key]
     try:
-        u = TRANSLATE % (urllib.parse.quote(text[:450]), "ja|" + TR_TARGET)
+        u = TRANSLATE % (urllib.parse.quote(text[:450]), "%s|%s" % (src, TR_TARGET))
         d = json.loads(fetch(u, 25).decode("utf-8", "replace"))
         out = (d.get("responseData") or {}).get("translatedText")
         if out and d.get("responseStatus") == 200:
@@ -301,6 +309,8 @@ def collect():
     cutoff = now - timedelta(days=DAYS)
     os.makedirs(RAW, exist_ok=True)
     report, staged, proxied = [], [], set()
+    # charge tot : les titres anglophones sont traduits eux aussi
+    cache = _load_cache()
 
     # 1. Bing News
     for query, label in QUERIES:
@@ -354,7 +364,6 @@ def collect():
                        "ok": True, "note": "fighters.co.jp/en/news via proxy"})
 
     # 3. sources japonaises (traduites automatiquement)
-    cache = _load_cache()
     jp = [i for i in google_news_jp(cache) if i["jp"] is False]
     for it in jp:
         it.update(chip="Presse JP", kind="jp", priority=2)
@@ -379,10 +388,6 @@ def collect():
             n += 1
         report.append({"source": name + " (JP)", "site": url, "n": n,
                        "ok": n > 0, "note": "traduit automatiquement"})
-    try:
-        json.dump(cache, open(TR_CACHE, "w", encoding="utf-8"), ensure_ascii=False)
-    except Exception:
-        pass
     report.append({"source": "Google News JP", "site": "https://news.google.com/", "n": len(jp),
                    "ok": len(jp) > 0, "note": "\u65e5\u672c\u8a9e -> %s, MyMemory" % TR_TARGET})
 
@@ -407,13 +412,28 @@ def collect():
     final = final[:TOTAL_CAP]
 
     resolved = 0
+    translated_en = 0
     for it in final:
         if it.pop("resolve", False):
             real = resolve_bing(it["url"])
             if real:
                 it["url"] = real
                 resolved += 1
+        # titres anglophones traduits en dernier : seuls les articles retenus
+        # sont envoyes au service, ce qui menage le quota gratuit.
+        if it["kind"] == "bing":
+            before = it["title"]
+            it["title"] = translate(before, cache, "en")
+            if it["title"] != before:
+                translated_en += 1
+            if translated_en and translated_en % 4 == 0:
+                time.sleep(1.0)
         it["summary"] = clip(it["summary"])
+
+    try:
+        json.dump(cache, open(TR_CACHE, "w", encoding="utf-8"), ensure_ascii=False)
+    except Exception:
+        pass
 
     items = [{"title": i["title"], "url": i["url"], "when": i["_dt"].isoformat(),
               "summary": i["summary"], "publisher": i["publisher"], "chip": i["chip"],
@@ -437,6 +457,7 @@ def collect():
     for r in report:
         print("  %-26s %s n=%-3s %s" % (r["source"], "OK " if r["ok"] else "KO ", r["n"], r["note"][:50]))
     print("  liens Bing resolus vers l'editeur: %d" % resolved)
+    print("  titres anglophones traduits en %s: %d" % (TR_TARGET, translated_en))
     if proxied:
         print("  via proxy: %s" % ", ".join(sorted(proxied)))
 

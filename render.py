@@ -164,7 +164,7 @@ def main():
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Fil Fighters \u2014 Hokkaido Nippon-Ham, le fil</title>
-<meta name="description" content="Toutes les news des Hokkaido Nippon-Ham Fighters (NPB) : sources anglophones affich\u00e9es telles quelles, sources japonaises traduites en fran\u00e7ais. Chaque carte renvoie \u00e0 l'article original.">
+<meta name="description" content="Toutes les news des Hokkaido Nippon-Ham Fighters (NPB), traduites en fran\u00e7ais, avec le lien vers chaque article original.">
 <style>
 __FONTS__
 :root{
@@ -372,7 +372,7 @@ footer .note b{color:var(--chalk)}
   <div class="layout">
     <main>
       <div class="lead">
-        <p><strong>Z\u00e9ro traduction, z\u00e9ro abonnement.</strong> Les articles anglophones sont affich\u00e9s tels quels ; les sources japonaises sont traduites automatiquement en fran\u00e7ais, avec le lien vers l'original. Chaque carte renvoie \u00e0 l'article complet
+        <p><strong>Traduit, gratuit, sans abonnement.</strong> Sources anglophones comme japonaises sont rendues en fran\u00e7ais. Le lien vers l'article original reste sur chaque carte. Chaque carte renvoie \u00e0 l'article complet
         chez la source, qui seule per\u00e7oit son audience.</p>
       </div>
       __BODY__
