@@ -28,6 +28,16 @@ jobs:
         with:
           python-version: '3.12'
 
+      # Le cache de traduction doit survivre entre les executions : sans lui,
+      # chaque passage retraduirait les memes titres et epuiserait le quota
+      # gratuit de MyMemory. Le workflow ne commite plus (le deploiement passe
+      # par l'artefact), donc le cache passe par actions/cache.
+      - uses: actions/cache@v4
+        with:
+          path: data/translate_cache.json
+          key: trcache-${{ github.run_id }}
+          restore-keys: trcache-
+
       - name: Collecte et rendu
         run: |
           python3 collect.py
