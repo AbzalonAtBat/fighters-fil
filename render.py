@@ -163,8 +163,8 @@ def main():
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fil Fighters \u2014 Hokkaido Nippon-Ham, presse anglophone</title>
-<meta name="description" content="Toutes les news des Hokkaido Nippon-Ham Fighters (NPB), agr\u00e9g\u00e9es depuis les sources anglophones, avec le lien vers chaque article original.">
+<title>Fil Fighters \u2014 Hokkaido Nippon-Ham, le fil</title>
+<meta name="description" content="Toutes les news des Hokkaido Nippon-Ham Fighters (NPB) : sources anglophones affich\u00e9es telles quelles, sources japonaises traduites en fran\u00e7ais. Chaque carte renvoie \u00e0 l'article original.">
 <style>
 __FONTS__
 :root{
@@ -356,7 +356,7 @@ footer .note b{color:var(--chalk)}
     <div class="ctrl-row">
       <label class="search">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
-        <input id="q" type="search" placeholder="Chercher dans les titres et extraits (en anglais)" aria-label="Rechercher">
+        <input id="q" type="search" placeholder="Chercher dans les titres et extraits" aria-label="Rechercher">
         <span class="kbd">/</span>
       </label>
       <button class="reset" id="reset" type="button">R\u00e9initialiser</button>
@@ -372,7 +372,7 @@ footer .note b{color:var(--chalk)}
   <div class="layout">
     <main>
       <div class="lead">
-        <p><strong>Z\u00e9ro traduction, z\u00e9ro abonnement.</strong> Les articles anglophones sont affich\u00e9s tels quels ; les sources japonaises sont traduites automatiquement en anglais, avec le lien vers l'original. Chaque carte renvoie \u00e0 l'article complet
+        <p><strong>Z\u00e9ro traduction, z\u00e9ro abonnement.</strong> Les articles anglophones sont affich\u00e9s tels quels ; les sources japonaises sont traduites automatiquement en fran\u00e7ais, avec le lien vers l'original. Chaque carte renvoie \u00e0 l'article complet
         chez la source, qui seule per\u00e7oit son audience.</p>
       </div>
       __BODY__
@@ -389,7 +389,7 @@ footer .note b{color:var(--chalk)}
       <div class="panel">
         <h3>Pourquoi c'est gratuit</h3>
         <ul class="free">
-          <li><b>Collecte</b> \u2014 Bing News et site officiel, aucune API payante</li>
+          <li><b>Collecte</b> \u2014 Bing News et Google News JP, aucune API payante</li>
           <li><b>Ex\u00e9cution</b> \u2014 cron GitHub Actions, palier gratuit</li>
           <li><b>H\u00e9bergement</b> \u2014 page statique, h\u00e9bergement gratuit</li>
           <li><b>Stockage</b> \u2014 un fichier JSON, pas de base de donn\u00e9es</li>

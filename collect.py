@@ -53,7 +53,7 @@ JP_RE = re.compile(r"[\u3000-\u30ff\u4e00-\u9fff]")
 # les IP de datacenter et les instances LibreTranslate publiques sont mortes :
 # MyMemory est le seul service teste qui repond (6/6 appels, JA->EN et JA->FR).
 TRANSLATE = ("https://api.mymemory.translated.net/get?q=%s&langpair=%s")
-TR_TARGET = "en"          # le fil est anglophone : voir README pour passer en FR
+TR_TARGET = "fr"          # titres japonais traduits en francais
 TR_CACHE = os.path.join(DATA, "translate_cache.json")
 TR_MAX = 26               # budget par execution (quota gratuit MyMemory)
 
@@ -289,6 +289,10 @@ def google_news_jp(cache):
         it["title"] = translate(it["title"], cache)
         it["publisher"] = translate(it["publisher"], cache) if JP_RE.search(it["publisher"]) else it["publisher"]
         it["jp"] = False
+        # le changement de langue regenere tout le cache d'un coup : on espace
+        # les appels pour ne pas declencher la limitation de debit MyMemory.
+        if i and i % 4 == 0:
+            time.sleep(1.0)
     return out
 
 
