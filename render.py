@@ -91,7 +91,7 @@ BANDS = [
     ("Plus ancien", "archive du fil", "band-old"),
 ]
 
-CHIP_ORDER = []
+CHIP_ORDER = ["Presse JP"]
 
 
 def esc(s):
@@ -372,7 +372,7 @@ footer .note b{color:var(--chalk)}
   <div class="layout">
     <main>
       <div class="lead">
-        <p><strong>Z\u00e9ro traduction, z\u00e9ro abonnement.</strong> Les titres et extraits sont affich\u00e9s en anglais, langue d'origine des sources suivies. Chaque carte renvoie \u00e0 l'article complet
+        <p><strong>Z\u00e9ro traduction, z\u00e9ro abonnement.</strong> Les articles anglophones sont affich\u00e9s tels quels ; les sources japonaises sont traduites automatiquement en anglais, avec le lien vers l'original. Chaque carte renvoie \u00e0 l'article complet
         chez la source, qui seule per\u00e7oit son audience.</p>
       </div>
       __BODY__
@@ -393,7 +393,7 @@ footer .note b{color:var(--chalk)}
           <li><b>Ex\u00e9cution</b> \u2014 cron GitHub Actions, palier gratuit</li>
           <li><b>H\u00e9bergement</b> \u2014 page statique, h\u00e9bergement gratuit</li>
           <li><b>Stockage</b> \u2014 un fichier JSON, pas de base de donn\u00e9es</li>
-          <li><b>Traduction</b> \u2014 supprim\u00e9e du p\u00e9rim\u00e8tre</li>
+          <li><b>Traduction</b> \u2014 MyMemory, gratuit et sans cl\u00e9</li>
         </ul>
       </div>
     </aside>

@@ -36,6 +36,28 @@ QUERIES = [
 ]
 OFFICIAL = "https://www.fighters.co.jp/en/news/"
 
+# Sources japonaises : le club ne publie pas de flux exploitable et les
+# quotidiens sportifs (Nikkan, Sponichi, Daily, Hochi, Sanspo) sont en 404.
+# Google News JP est de loin le plus productif (105 articles Fighters mesures),
+# Baseball King fournit des liens directs.
+GN_JP = "https://news.google.com/rss/search?q=%s&hl=ja&gl=JP&ceid=JP:ja"
+GN_JP_QUERIES = [
+    ("\u65e5\u672c\u30cf\u30e0", "Presse JP \u2014 \u65e5\u672c\u30cf\u30e0"),
+    ("\u5317\u6d77\u9053\u65e5\u672c\u30cf\u30e0\u30d5\u30a1\u30a4\u30bf\u30fc\u30ba",
+     "Presse JP \u2014 \u30d5\u30a1\u30a4\u30bf\u30fc\u30ba"),
+]
+JP_FEEDS = [("Baseball King", "https://baseballking.jp/feed")]
+JP_RE = re.compile(r"[\u3000-\u30ff\u4e00-\u9fff]")
+
+# Traduction gratuite, sans cle ni compte. Google Traduction repond 429 depuis
+# les IP de datacenter et les instances LibreTranslate publiques sont mortes :
+# MyMemory est le seul service teste qui repond (6/6 appels, JA->EN et JA->FR).
+TRANSLATE = ("https://api.mymemory.translated.net/get?q=%s&langpair=%s")
+TR_TARGET = "en"          # le fil est anglophone : voir README pour passer en FR
+TR_CACHE = os.path.join(DATA, "translate_cache.json")
+TR_MAX = 26               # budget par execution (quota gratuit MyMemory)
+
+
 CJK_RE = re.compile(r"[\u3000-\u30ff\u4e00-\u9fff\uff00-\uffef]")
 
 
@@ -58,8 +80,8 @@ NAV_TITLES = {
 }
 KEYWORDS = ("fighter", "hokkaido", "nippon-ham", "nippon ham", "nipponham")
 DAYS = 30
-CAPS = {"bing": 26, "official": 10}
-TOTAL_CAP = 36
+CAPS = {"bing": 18, "official": 10, "jp": 30}
+TOTAL_CAP = 44
 JACCARD = 0.55
 JUNK = ("auction", "ticket", "shop")
 
@@ -199,6 +221,77 @@ def official_items():
     return out
 
 
+def _load_cache():
+    try:
+        return json.load(open(TR_CACHE, encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def translate(text, cache):
+    """Traduit JA->TR_TARGET via MyMemory (gratuit, sans cle).
+
+    Le cache sur disque est indispensable : le quota gratuit est limite, et sans
+    lui chaque execution retraduirait les memes titres. Les entrees deja vues ne
+    coutent donc rien.
+    """
+    if not text or not JP_RE.search(text):
+        return text
+    key = "%s|%s" % (TR_TARGET, text)
+    if key in cache:
+        return cache[key]
+    try:
+        u = TRANSLATE % (urllib.parse.quote(text[:450]), "ja|" + TR_TARGET)
+        d = json.loads(fetch(u, 25).decode("utf-8", "replace"))
+        out = (d.get("responseData") or {}).get("translatedText")
+        if out and d.get("responseStatus") == 200:
+            out = clean(out)
+            cache[key] = out
+            return out
+    except Exception:
+        pass
+    return text          # en cas d'echec on garde l'original : jamais de trou
+
+
+def strip_publisher(title, pub):
+    """Google News suffixe le titre par " - Editeur"."""
+    for sep in (" - ", " \u2013 ", " | "):
+        suf = sep + (pub or "")
+        if pub and title.endswith(suf):
+            return title[:-len(suf)].strip()
+    return title
+
+
+def google_news_jp(cache):
+    """Articles japonais via Google News JP (le plus productif de loin)."""
+    out = []
+    for query, label in GN_JP_QUERIES:
+        url = GN_JP % urllib.parse.quote(query)
+        slug = re.sub(r"\W+", "-", label).lower()[:40]
+        path = os.path.join(RAW, "gnjp-%s.xml" % slug)
+        try:
+            open(path, "wb").write(fetch(url))
+        except Exception:
+            continue
+        items, _ = rss_items(open(path, "rb").read()) if os.path.exists(path) else ([], None)
+        for it in items:
+            t = it["title"] or ""
+            if not t or not it["url"]:
+                continue
+            if not re.search(r"\u30d5\u30a1\u30a4\u30bf\u30fc\u30ba|\u65e5\u672c\u30cf\u30e0", t):
+                continue
+            pub = (it["publisher"] or "Google News JP").strip()
+            title = strip_publisher(t, pub)
+            out.append({"title": title, "url": it["url"], "when": it["when"],
+                        "publisher": pub, "summary": "", "jp": True})
+    # traduction des titres et des noms d'editeurs, dans la limite du budget
+    for i, it in enumerate(out[:TR_MAX]):
+        it["title"] = translate(it["title"], cache)
+        it["publisher"] = translate(it["publisher"], cache) if JP_RE.search(it["publisher"]) else it["publisher"]
+        it["jp"] = False
+    return out
+
+
 def collect():
     now = datetime.now(timezone.utc)
     cutoff = now - timedelta(days=DAYS)
@@ -256,7 +349,40 @@ def collect():
         report.append({"source": "Site officiel (EN)", "site": OFFICIAL, "n": n,
                        "ok": True, "note": "fighters.co.jp/en/news via proxy"})
 
-    # 3. dedup
+    # 3. sources japonaises (traduites automatiquement)
+    cache = _load_cache()
+    jp = [i for i in google_news_jp(cache) if i["jp"] is False]
+    for it in jp:
+        it.update(chip="Presse JP", kind="jp", priority=2)
+        it["_dt"] = it["when"] or now
+        staged.append(it)
+    for name, url in JP_FEEDS:
+        try:
+            items, _ = rss_items(fetch(url))
+        except Exception:
+            items = []
+        n = 0
+        for it in items:
+            t = it["title"] or ""
+            if not t or not it["url"]:
+                continue
+            if not re.search(r"\u30d5\u30a1\u30a4\u30bf\u30fc\u30ba|\u65e5\u672c\u30cf\u30e0", t):
+                continue
+            it["title"] = translate(t, cache)
+            it.update(chip="Presse JP", kind="jp", priority=2, publisher=name)
+            it["_dt"] = it["when"] or now
+            staged.append(it)
+            n += 1
+        report.append({"source": name + " (JP)", "site": url, "n": n,
+                       "ok": n > 0, "note": "traduit automatiquement"})
+    try:
+        json.dump(cache, open(TR_CACHE, "w", encoding="utf-8"), ensure_ascii=False)
+    except Exception:
+        pass
+    report.append({"source": "Google News JP", "site": "https://news.google.com/", "n": len(jp),
+                   "ok": len(jp) > 0, "note": "\u65e5\u672c\u8a9e -> %s, MyMemory" % TR_TARGET})
+
+    # 4. dedup
     staged.sort(key=lambda x: (x["priority"], -x["_dt"].timestamp()))
     kept, sigs = [], []
     for it in staged:
