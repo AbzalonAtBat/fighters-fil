@@ -91,7 +91,7 @@ BANDS = [
     ("Plus ancien", "archive du fil", "band-old"),
 ]
 
-CHIP_ORDER = ["Site officiel"]
+CHIP_ORDER = []
 
 
 def esc(s):

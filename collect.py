@@ -249,8 +249,12 @@ def collect():
         n += 1
     if n:
         proxied.add("site officiel via jina")
-    report.append({"source": "Site officiel (EN)", "site": OFFICIAL, "n": n,
-                   "ok": n > 0, "note": "fighters.co.jp/en/news via proxy"})
+    # Le site officiel n'est affiche que s'il apporte des articles : sa page de
+    # news ne contient que de la navigation (les articles sont charges en
+    # JavaScript), donc l'afficher a n=0 le presenterait a tort comme en panne.
+    if n:
+        report.append({"source": "Site officiel (EN)", "site": OFFICIAL, "n": n,
+                       "ok": True, "note": "fighters.co.jp/en/news via proxy"})
 
     # 3. dedup
     staged.sort(key=lambda x: (x["priority"], -x["_dt"].timestamp()))

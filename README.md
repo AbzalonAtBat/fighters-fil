@@ -14,8 +14,7 @@ Publié automatiquement par GitHub Pages toutes les 30 minutes.
 
 | Source | Type | État constaté (17/10/2026) |
 |---|---|---|
-| Bing News — 6 requêtes | presse anglophone (MLB Rumors, theScore, RotoWire, MSN, DAZN, note…) | actif |
-| fighters.co.jp/en/news | site officiel du club, version anglaise | actif |
+| Bing News — 6 requêtes | presse et blogues anglophones (note, DAZN, MLB Rumors, theScore, RotoWire, MSN…) | actif |
 
 ### Sources écartées, et pourquoi
 
@@ -31,12 +30,13 @@ faible : **la couverture anglophone d'un club de NPB est rare**. Sondage mené l
 | Reddit r/NPB | **403** — contrairement à r/phillies, le subreddit bloque |
 | World Baseball | **404** |
 | Japan Forward | flux vivant, mais **aucun article Fighters** (actualité générale) |
+| fighters.co.jp/en/news | page accessible et en anglais, mais **seulement des rubriques** : les articles sont chargés en JavaScript, aucun titre extractible |
 
 ## Comment ça marche
 
 ```
 GitHub Actions (cron 30 min)
-   └─ collect.py   ── Bing News (6 requêtes) + site officiel via proxy
+   └─ collect.py   ── Bing News (6 requêtes), titres anglais uniquement
    └─ render.py    ── génère _site/index.html
    └─ déploiement GitHub Pages
 ```
