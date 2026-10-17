@@ -36,6 +36,26 @@ QUERIES = [
 ]
 OFFICIAL = "https://www.fighters.co.jp/en/news/"
 
+CJK_RE = re.compile(r"[\u3000-\u30ff\u4e00-\u9fff\uff00-\uffef]")
+
+
+def is_english(text):
+    """Le fil est anglophone : on ecarte les titres en japonais (DAZN, Yahoo...
+    remontent via Bing News avec des titres en japonais)."""
+    if not text:
+        return False
+    cjk = len(CJK_RE.findall(text))
+    return cjk == 0 or (cjk / max(1, len(text))) < 0.12
+
+
+NAV_TITLES = {
+    "news", "all news", "team", "events", "tickets", "season ticket",
+    "food & drinks", "food and drinks", "press release", "previous month",
+    "next month", "match broadcast schedule", "gaora appearance information",
+    "shop", "stadium", "access", "schedule", "standings", "roster", "farm team",
+    "goods", "sponsor", "museum", "kids", "academy", "mascot", "cheer",
+    "broadcast", "ticket", "player", "players",
+}
 KEYWORDS = ("fighter", "hokkaido", "nippon-ham", "nippon ham", "nipponham")
 DAYS = 30
 CAPS = {"bing": 26, "official": 10}
@@ -165,7 +185,13 @@ def official_items():
     out, seen = [], set()
     for m in re.finditer(r"\[([^\]\n]{12,140})\]\((https://www\.fighters\.co\.jp/en/news/[^\)\s]+)\)", md):
         title, url = clean(m.group(1)), m.group(2)
-        if url in seen or re.search(r"^(news|all news|team|events|tickets)$", title, re.I):
+        if url in seen:
+            continue
+        # La page de news melange les articles et les rubriques du menu
+        # ("Season Ticket", "Food & Drinks"...). Un vrai titre d'article est
+        # descriptif : on exige au moins 5 mots et on ecarte le menu.
+        low = title.lower()
+        if len(title.split()) < 5 or low in NAV_TITLES:
             continue
         seen.add(url)
         out.append({"title": title, "url": url, "when": None,
@@ -199,6 +225,8 @@ def collect():
             if it["when"] and it["when"] < cutoff:
                 continue
             if not any(k in (t + " " + it["url"]).lower() for k in KEYWORDS):
+                continue
+            if not is_english(t):
                 continue
             pub = it["publisher"] or urllib.parse.urlparse(it["url"]).netloc
             if any(j in pub.lower() for j in JUNK):

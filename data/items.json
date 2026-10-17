@@ -1,6 +1,6 @@
 {
- "generated": "2026-10-17T06:54:29.584566+00:00",
- "count": 14,
+ "generated": "2026-10-17T06:55:41.304329+00:00",
+ "count": 7,
  "sources": [
   {
    "source": "Presse — club",
@@ -19,8 +19,8 @@
   {
    "source": "Presse — NPB",
    "site": "https://www.bing.com/news",
-   "n": 1,
-   "ok": true,
+   "n": 0,
+   "ok": false,
    "note": "Bing News RSS"
   },
   {
@@ -47,70 +47,16 @@
   {
    "source": "Site officiel (EN)",
    "site": "https://www.fighters.co.jp/en/news/",
-   "n": 7,
-   "ok": true,
+   "n": 0,
+   "ok": false,
    "note": "fighters.co.jp/en/news via proxy"
   }
  ],
  "items": [
   {
-   "title": "Season Ticket",
-   "url": "https://www.fighters.co.jp/en/news/list/0/00000016/",
-   "when": "2026-10-17T06:54:29.584566+00:00",
-   "summary": "",
-   "publisher": "Hokkaido Nippon-Ham Fighters",
-   "chip": "Site officiel",
-   "site": "https://www.fighters.co.jp/en/"
-  },
-  {
-   "title": "Food & Drinks",
-   "url": "https://www.fighters.co.jp/en/news/list/0/gourmet/",
-   "when": "2026-10-17T06:54:29.584566+00:00",
-   "summary": "",
-   "publisher": "Hokkaido Nippon-Ham Fighters",
-   "chip": "Site officiel",
-   "site": "https://www.fighters.co.jp/en/"
-  },
-  {
-   "title": "Press Release",
-   "url": "https://www.fighters.co.jp/en/news/list/0/00000001/",
-   "when": "2026-10-17T06:54:29.584566+00:00",
-   "summary": "",
-   "publisher": "Hokkaido Nippon-Ham Fighters",
-   "chip": "Site officiel",
-   "site": "https://www.fighters.co.jp/en/"
-  },
-  {
-   "title": "Match Broadcast Schedule",
-   "url": "https://www.fighters.co.jp/en/news/broadcast/",
-   "when": "2026-10-17T06:54:29.584566+00:00",
-   "summary": "",
-   "publisher": "Hokkaido Nippon-Ham Fighters",
-   "chip": "Site officiel",
-   "site": "https://www.fighters.co.jp/en/"
-  },
-  {
-   "title": "GAORA Appearance Information",
-   "url": "https://www.fighters.co.jp/en/news/media/",
-   "when": "2026-10-17T06:54:29.584566+00:00",
-   "summary": "",
-   "publisher": "Hokkaido Nippon-Ham Fighters",
-   "chip": "Site officiel",
-   "site": "https://www.fighters.co.jp/en/"
-  },
-  {
-   "title": "Previous month",
-   "url": "https://www.fighters.co.jp/en/news/media/202609/",
-   "when": "2026-10-17T06:54:29.584566+00:00",
-   "summary": "",
-   "publisher": "Hokkaido Nippon-Ham Fighters",
-   "chip": "Site officiel",
-   "site": "https://www.fighters.co.jp/en/"
-  },
-  {
    "title": "Hokkaido Nippon-Ham Fighters Fan Diary: 2026 Season Conclusion",
    "url": "https://note.com/onojima/n/n1d77116376a2?hl=en",
-   "when": "2026-10-16T23:52:00+00:00",
+   "when": "2026-10-16T23:54:00+00:00",
    "summary": "",
    "publisher": "note",
    "chip": "note",
@@ -132,15 +78,6 @@
    "summary": "",
    "publisher": "note",
    "chip": "note",
-   "site": "https://www.bing.com/news"
-  },
-  {
-   "title": "【10月16日】福岡ソフトバンクホークスvs北海道日本ハムファイターズのテレビ放送/ネット配信予定｜プロ野球パ・リーグCS ...",
-   "url": "https://www.dazn.com/ja-JP/news/%E9%87%8E%E7%90%83/fukuoka-softbank-hawks-hokkaido-nippon-ham-fighters-broadcast-npb-20261016/1fzcs4xan63lz19onrayqkz1lw",
-   "when": "2026-10-15T17:01:00+00:00",
-   "summary": "",
-   "publisher": "DAZN",
-   "chip": "DAZN",
    "site": "https://www.bing.com/news"
   },
   {
